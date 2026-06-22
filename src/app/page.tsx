@@ -105,7 +105,7 @@ export default function Home() {
             Aqui você pode ver todos os clientes e serviços agendados para hoje.
           </p>
         </div>
-        <div className="pb-24 md:pb-0">
+        <div className="pb-24 md:pb-0 w-full">
           {periods.map((period, index) => (
             <PeriodSection period={period} key={index} />
           ))}
