@@ -1,5 +1,7 @@
 'use client';
 
+import { createAppointment } from '@/app/actions';
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
@@ -8,7 +10,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
 import {
   Form,
   FormControl,
@@ -17,11 +18,11 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
-import z from 'zod';
-import { useForm } from 'react-hook-form';
+import { Textarea } from '@/components/ui/textarea';
+import { cn } from '@/lib/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { format, setHours, setMinutes, startOfToday } from 'date-fns';
 import {
   CalendarIcon,
   ChevronDownIcon,
@@ -31,11 +32,12 @@ import {
   Phone,
   User,
 } from 'lucide-react';
+import { useForm } from 'react-hook-form';
 import { IMaskInput } from 'react-imask';
-import { format, min, setHours, setMinutes, startOfToday } from 'date-fns';
-import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
-import { cn } from '@/lib/utils';
+import { toast } from 'sonner';
+import z from 'zod';
 import { Calendar } from '../ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
 import {
   Select,
   SelectContent,
@@ -43,8 +45,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '../ui/select';
-import { toast } from 'sonner';
-import { createAppointment } from '@/app/actions';
+import { useState } from 'react';
 
 const appointmentFormSchema = z
   .object({
@@ -79,6 +80,7 @@ const appointmentFormSchema = z
 type AppointFormValues = z.infer<typeof appointmentFormSchema>;
 
 export const AppointmentForm = () => {
+  const [isOpen, setIsOpen] = useState(false);
   const form = useForm<AppointFormValues>({
     resolver: zodResolver(appointmentFormSchema),
     defaultValues: {
@@ -109,11 +111,12 @@ export const AppointmentForm = () => {
 
     toast.success(`Agendamento criado com sucesso!`);
 
+    setIsOpen(false);
     form.reset();
   };
 
   return (
-    <Dialog>
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         <Button variant="brand">Novo Agendamento</Button>
       </DialogTrigger>
