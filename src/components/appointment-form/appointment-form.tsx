@@ -97,13 +97,19 @@ export const AppointmentForm = () => {
     const scheduleAt = new Date(data.scheduleAt);
     scheduleAt.setHours(Number(hour), Number(minute), 0, 0);
 
-    // invoca nossa SERVER ACTION
-    await createAppointment({
+    const result = await createAppointment({
       ...data,
       scheduleAt,
     });
 
+    if (result?.error) {
+      toast.error(result.error);
+      return;
+    }
+
     toast.success(`Agendamento criado com sucesso!`);
+
+    form.reset();
   };
 
   return (
