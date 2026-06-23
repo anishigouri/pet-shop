@@ -29,6 +29,8 @@
   --color-accent-yellow-light: #75601b;
   --color-accent-orange: #f09102;
   --color-accent-orange-light: #75501b;
+  --color-destructive: #dc2626;
+  --color-destructive-foreground: #ffffff;
 
   /* Typography */
   --font-family-title: 'Inter Tight', sans-serif;
@@ -81,8 +83,8 @@
   --muted-foreground: var(--color-content-secondary);
   --accent: var(--color-accent-yellow);
   --accent-foreground: var(--color-content-primary);
-  --destructive: #dc2626;
-  --destructive-foreground: #ffffff;
+  --destructive: var(--color-destructive);
+  --destructive-foreground: var(--color-destructive-foreground);
   --border: var(--color-border-primary);
   --input: var(--color-border-primary);
   --ring: var(--color-border-brand);

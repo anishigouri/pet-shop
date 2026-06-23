@@ -102,3 +102,15 @@ export async function updateAppointment(data: AppointmentData, id: string) {
     return { error: 'Erro ao atualizar o agendamento' };
   }
 }
+
+export async function deleteAppointment(id: string) {
+  try {
+    await prisma.appointment.delete({
+      where: { id },
+    });
+    revalidatePath('/');
+  } catch (error) {
+    console.error(error);
+    return { error: 'Erro ao remover o agendamento' };
+  }
+}
