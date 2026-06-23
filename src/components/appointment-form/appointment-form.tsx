@@ -45,7 +45,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '../ui/select';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { Appointment } from '@/types/appointment';
 
 const appointmentFormSchema = z
   .object({
@@ -79,7 +80,15 @@ const appointmentFormSchema = z
 
 type AppointFormValues = z.infer<typeof appointmentFormSchema>;
 
-export const AppointmentForm = () => {
+type AppointmentFormProps = {
+  appointment?: Appointment;
+  children?: React.ReactNode;
+};
+
+export const AppointmentForm = ({
+  appointment,
+  children,
+}: AppointmentFormProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const form = useForm<AppointFormValues>({
     resolver: zodResolver(appointmentFormSchema),
@@ -115,11 +124,15 @@ export const AppointmentForm = () => {
     form.reset();
   };
 
+  useEffect(() => {
+    if (appointment) {
+      form.reset(appointment);
+    }
+  }, [appointment]);
+
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger asChild>
-        <Button variant="brand">Novo Agendamento</Button>
-      </DialogTrigger>
+      {children && <DialogTrigger asChild>{children}</DialogTrigger>}
 
       <DialogContent
         variant="appointment"
