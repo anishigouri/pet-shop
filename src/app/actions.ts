@@ -57,3 +57,48 @@ export async function createAppointment(data: AppointmentData) {
     return { error: 'Erro ao criar o agendamento' };
   }
 }
+
+export async function updateAppointment(data: AppointmentData, id: string) {
+  try {
+    const parsedData = appointmentSchema.parse(data);
+
+    const { scheduleAt } = parsedData;
+    const hour = scheduleAt.getHours();
+
+    const isMorning = hour >= 9 && hour < 12;
+
+    const isAfternoon = hour >= 13 && hour < 18;
+
+    const isEvening = hour >= 19 && hour < 21;
+
+    if (!isMorning && !isAfternoon && !isEvening) {
+      return {
+        error:
+          'Agendamentos só podem ser feitos das 9h às 12h, das 13h às 18h e das 19h às 21h',
+      };
+    }
+
+    const existingAppointment = await prisma.appointment.findFirst({
+      where: {
+        scheduleAt,
+        id: {
+          not: id,
+        },
+      },
+    });
+
+    if (existingAppointment) {
+      return { error: 'Este horário já está ocupado' };
+    }
+
+    await prisma.appointment.update({
+      where: { id },
+      data: parsedData,
+    });
+
+    revalidatePath('/');
+  } catch (error) {
+    console.error(error);
+    return { error: 'Erro ao atualizar o agendamento' };
+  }
+}

@@ -1,6 +1,6 @@
 'use client';
 
-import { createAppointment } from '@/app/actions';
+import { createAppointment, updateAppointment } from '@/app/actions';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -103,22 +103,23 @@ export const AppointmentForm = ({
   });
 
   const onSubmit = async (data: AppointFormValues) => {
+    const isEditing = !!appointment?.id;
     const [hour, minute] = data.time.split(':');
-
     const scheduleAt = new Date(data.scheduleAt);
     scheduleAt.setHours(Number(hour), Number(minute), 0, 0);
 
-    const result = await createAppointment({
-      ...data,
-      scheduleAt,
-    });
+    const result = isEditing
+      ? await updateAppointment({ ...data, scheduleAt }, appointment?.id)
+      : await createAppointment({ ...data, scheduleAt });
 
     if (result?.error) {
       toast.error(result.error);
       return;
     }
 
-    toast.success(`Agendamento criado com sucesso!`);
+    toast.success(
+      `Agendamento ${isEditing ? 'atualizado' : 'criado'} com sucesso!`
+    );
 
     setIsOpen(false);
     form.reset();
@@ -338,7 +339,7 @@ export const AppointmentForm = ({
                 {form.formState.isSubmitting && (
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 )}
-                Agendar
+                {appointment?.id ? 'Atualizar' : 'Agendar'}
               </Button>
             </div>
           </form>
